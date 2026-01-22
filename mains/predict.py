@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.extend(['..'])
 
-import tensorflow as tf
+from utils.tf_compat import tf
 import glob
 import numpy as np
 from tqdm import tqdm

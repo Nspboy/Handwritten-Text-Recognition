@@ -4,7 +4,7 @@ sys.path.extend(['..'])
 
 import glob
 import pickle
-import tensorflow as tf
+from utils.tf_compat import tf, dense_to_sparse
 from utils.augment import Augmentor
 import matplotlib.pyplot as plt
 
@@ -154,7 +154,7 @@ def main():
 
     data_loader = DataGenerator(Config)
     x_im, y, x_w, x_len = data_loader.get_input()
-    y = tf.contrib.layers.dense_to_sparse(y, eos_token=-1).values
+    y = dense_to_sparse(y, eos_token=-1).values
     x_im = tf.expand_dims(x_im, 3)
     # translation_vector = tf.cast(tf.stack([(tf.shape(x_im)[2] - x_w) / tf.constant(2),
     #                                        tf.constant(0.0, shape=[Config.batch_size], dtype=tf.float64)], axis=1),

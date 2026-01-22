@@ -2,7 +2,7 @@ import sys
 
 sys.path.extend(['..'])
 
-import tensorflow as tf
+from utils.tf_compat import tf
 from trainers.trainer import Trainer
 from data_loader.data_generator import DataGenerator
 from utils.config import process_config

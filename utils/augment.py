@@ -1,5 +1,12 @@
-import tensorflow as tf
+from utils.tf_compat import tf
+import tensorflow_addons as tfa
 import numpy as np
+
+
+def _matrix_to_flat_8(m):
+    """Convert 3x3 matrix to 8-param projective form (replaces tf.contrib.image.matrices_to_flat_transforms)."""
+    m = tf.reshape(m, [-1, 3, 3])
+    return tf.concat([m[:, 0, :], m[:, 1, :], m[:, 2, :2]], axis=1)
 
 
 class Augmentor:
@@ -12,8 +19,13 @@ class Augmentor:
 
     @staticmethod
     def transform(img_in, forward_transform, out_shape=None):
-        t = tf.contrib.image.matrices_to_flat_transforms(tf.linalg.inv(forward_transform))
-        img_out = tf.contrib.image.transform(img_in, t, interpolation="BILINEAR", output_shape=out_shape)
+        m = tf.reshape(tf.convert_to_tensor(forward_transform), [1, 3, 3])
+        flat = _matrix_to_flat_8(tf.linalg.inv(m))
+        img_batch = tf.expand_dims(img_in, 0)
+        img_out = tfa.image.transform(img_batch, flat, interpolation='BILINEAR')
+        img_out = tf.squeeze(img_out, 0)
+        if out_shape is not None:
+            img_out = tf.image.resize_images(img_out, out_shape)
         return img_out
 
     @staticmethod
@@ -41,7 +53,7 @@ class Augmentor:
         im = tf.image.pad_to_bounding_box(
             self.image, tf.cast(tf.math.divide(height_pad, tf.constant(2, tf.int32)), tf.int32), 0,
             tf.math.add(self.height, height_pad), self.width)
-        im = tf.contrib.image.rotate(im, rot_factor)
+        im = tf.squeeze(tfa.image.rotate(tf.expand_dims(im, 0), tf.reshape(rot_factor, [1])), 0)
         return tf.image.resize_images(im, (self.height, self.width))
 
     def random_scaling(self, stdv=0.12, prob=0.5):
@@ -78,9 +90,9 @@ class Augmentor:
         trans_factor_w = tf.reshape(tf.gather(trans_factor, [0]), [])
         trans_factor_h = tf.reshape(tf.gather(trans_factor, [1]), [])
         apply_aug = tf.math.less(tf.random.uniform([]), tf.constant(prob))
+        trans = tf.reshape(tf.stack([trans_factor_w*self.width_float, trans_factor_h*self.height_float]), [1, 2])
         self.image = tf.cond(apply_aug,
-                             lambda: tf.contrib.image.translate(self.image, [trans_factor_w*self.width_float,
-                                                                             trans_factor_h*self.height_float]),
+                             lambda: tf.squeeze(tfa.image.translate(tf.expand_dims(self.image, 0), trans), 0),
                              lambda: self.image)
 
     def random_erosion(self, srate=0.8, rrate=1.2, prob=0.5):

@@ -12,7 +12,8 @@ Uses tf.nn.ctc_loss (no warpctc) for better portability.
 """
 
 from base.base_model import BaseModel
-import tensorflow as tf
+from utils.tf_compat import tf, dense_to_sparse
+import tensorflow_addons as tfa
 from .hrnn_attention import feature_enhancement_block
 
 
@@ -108,12 +109,12 @@ class Model(BaseModel):
 
         with tf.variable_scope('inputs'):
             self.x, y, self.length, self.lab_length = self.data_loader.get_input()
-            self.y = tf.contrib.layers.dense_to_sparse(y, eos_token=-1)
+            self.y = dense_to_sparse(y, eos_token=-1)
             self.x = tf.expand_dims(self.x, 3)
             x_shift = (tf.shape(self.x)[2] - self.length) / tf.constant(2)
             y_shift = tf.zeros_like(x_shift)
             translation_vector = tf.cast(tf.stack([x_shift, y_shift], axis=1), tf.float32)
-            self.x = tf.contrib.image.translate(self.x, translation_vector)
+            self.x = tfa.image.translate(self.x, translation_vector)
             self.length = tf.cast(tf.math.ceil(tf.math.divide(self.length, tf.constant(self.reduce_factor))), tf.int32)
             batch_size = tf.shape(self.x)[0]
             self.is_training = tf.placeholder(tf.bool, name='Training_flag')
@@ -123,7 +124,7 @@ class Model(BaseModel):
         tf.add_to_collection('inputs', y)
         tf.add_to_collection('inputs', self.is_training)
 
-        initializer = tf.contrib.layers.xavier_initializer_conv2d()
+        initializer = tf.glorot_uniform_initializer()
 
         # CNN
         cnn_out = self._cnn_blocks(self.x, batch_size, initializer)
@@ -133,15 +134,16 @@ class Model(BaseModel):
         output = tf.reshape(output, [-1, batch_size, (self.config.im_height // self.reduce_factor) * self.conv_depths[4]])
         self.length = tf.tile(tf.expand_dims(tf.shape(output)[0], axis=0), [batch_size])
 
-        # BiLSTM
+        # BiLSTM (replaces tf.contrib.cudnn_rnn.CudnnLSTM, removed in TF2)
         with tf.variable_scope('MultiRNN', reuse=tf.AUTO_REUSE):
             for i in range(self.rnn_num_layers):
                 output = tf.layers.dropout(output, self.rnn_dropout, training=self.is_training)
-                lstm = tf.contrib.cudnn_rnn.CudnnLSTM(1, self.rnn_num_hidden, 'linear_input', 'bidirectional')
-                output, _ = lstm(output)
-
-        # (T, B, 2*H)
-        output = tf.concat(output, 2)
+                fw_cell = tf.nn.rnn_cell.LSTMCell(self.rnn_num_hidden)
+                bw_cell = tf.nn.rnn_cell.LSTMCell(self.rnn_num_hidden)
+                outputs, _ = tf.nn.bidirectional_dynamic_rnn(
+                    fw_cell, bw_cell, output, time_major=True, dtype=tf.float32
+                )
+                output = tf.concat(outputs, 2)
 
         # Feature Enhancement: HRNN + Attention
         output = feature_enhancement_block(

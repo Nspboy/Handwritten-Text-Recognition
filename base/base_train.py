@@ -1,4 +1,4 @@
-import tensorflow as tf
+from utils.tf_compat import tf
 
 
 class BaseTrain:

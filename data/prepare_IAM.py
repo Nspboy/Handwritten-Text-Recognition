@@ -20,7 +20,7 @@ sys.path.extend(['..'])
 import cv2
 import numpy as np
 from tqdm import tqdm
-import tensorflow as tf
+from utils.tf_compat import tf
 import pickle as pkl
 import re
 from utils.utils import get_args

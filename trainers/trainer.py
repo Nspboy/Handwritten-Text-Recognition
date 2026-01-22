@@ -1,6 +1,6 @@
 from base.base_train import BaseTrain
 import numpy as np
-import tensorflow as tf
+from utils.tf_compat import tf
 from tqdm import tqdm
 
 
