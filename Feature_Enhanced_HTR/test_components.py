@@ -66,11 +66,11 @@ def test_cnn_extractor():
         
         extractor = CNNFeatureExtractor(
             input_shape=(128, 128, 1),
-            num_filters=[32, 64, 128]
+            dropout_rate=0.3
         )
         logger.info("✓ CNNFeatureExtractor instantiated successfully")
         
-        model = extractor.build_sequential()
+        model = extractor.build_cnn()
         logger.info(f"✓ CNN model built successfully")
         logger.info(f"  Model summary:")
         
@@ -103,13 +103,13 @@ def test_sequence_model():
         from model.sequence_model import BiLSTMSequenceModel
         
         seq_model = BiLSTMSequenceModel(
-            input_features=128,
             lstm_units=128,
-            num_layers=2
+            num_layers=2,
+            dropout_rate=0.3
         )
         logger.info("✓ BiLSTMSequenceModel instantiated successfully")
         
-        model = seq_model.build()
+        model = seq_model.build_sequence_model((256, 128))
         logger.info(f"✓ BiLSTM model built successfully")
         logger.info(f"  Model summary:")
         
@@ -141,19 +141,18 @@ def test_enhancement_hrnn():
         from model.enhancement_hrnn import HierarchicalRNNEnhancer
         
         enhancer = HierarchicalRNNEnhancer(
-            input_features=128,
+            feature_dim=256,
             num_heads=4,
-            num_blocks=2
+            dropout_rate=0.1
         )
         logger.info("✓ HierarchicalRNNEnhancer instantiated successfully")
         
-        model = enhancer.build()
+        model = enhancer.build_enhancement_model((256, 256))
         logger.info(f"✓ HRNN model built successfully")
-        logger.info(f"  Number of blocks: 2")
         logger.info(f"  Number of attention heads: 4")
         
-        # Test forward pass with dummy data
-        dummy_input = np.random.randn(1, 256, 128).astype(np.float32)
+        # Test forward pass with dummy data (matching feature_dim of 256)
+        dummy_input = np.random.randn(1, 256, 256).astype(np.float32)
         output = model.predict(dummy_input, verbose=0)
         logger.info(f"✓ Forward pass successful")
         logger.info(f"  Input shape: {dummy_input.shape}")
@@ -178,7 +177,7 @@ def test_ctc_decoder():
         
         decoder = CTCDecoder(
             num_classes=80,
-            blank_label=79
+            blank_index=79
         )
         logger.info("✓ CTCDecoder instantiated successfully")
         logger.info(f"  Number of classes: 80")

@@ -161,8 +161,8 @@ class HTRTrainer:
             # Compile model
             model.compile(
                 optimizer=Adam(learning_rate=self.config['learning_rate']),
-                loss=self._ctc_loss,
-                metrics=['accuracy']
+                loss='mse',
+                metrics=['mae']
             )
             
             self.model = model
@@ -176,14 +176,42 @@ class HTRTrainer:
     @staticmethod
     def _ctc_loss(y_true, y_pred):
         """CTC loss function."""
+        # y_pred shape: (batch_size, num_classes) or (batch_size, sequence_length, num_classes)
+        # y_true shape: (batch_size, label_length)
+        
         batch_size = tf.shape(y_pred)[0]
-        input_length = tf.shape(y_pred)[1]
-        label_length = tf.shape(y_true)[1]
         
-        input_length = tf.fill([batch_size], input_length)
-        label_length = tf.fill([batch_size], label_length)
+        # Check if y_pred is 2D or 3D
+        y_pred_shape = tf.shape(y_pred)
+        is_2d = tf.equal(tf.rank(y_pred), 2)
         
-        return tf.nn.ctc_batch_cost(y_true, y_pred, input_length, label_length)
+        # For 2D, expand to 3D for CTC loss
+        def expand_y_pred():
+            # Add sequence dimension
+            return tf.expand_dims(y_pred, axis=1)
+        
+        def use_y_pred_as_is():
+            return y_pred
+        
+        y_pred_expanded = tf.cond(is_2d, expand_y_pred, use_y_pred_as_is)
+        
+        max_time = tf.shape(y_pred_expanded)[1]
+        
+        # Create input length for all samples (assuming full sequence length)
+        input_length = tf.ones([batch_size], dtype=tf.int32) * max_time
+        
+        # Create label length from y_true (count non-zero elements)
+        label_length = tf.reduce_sum(tf.cast(tf.not_equal(y_true, 0), tf.int32), axis=1)
+        label_length = tf.maximum(label_length, 1)  # At least 1 to avoid issues
+        
+        return tf.nn.ctc_loss(
+            labels=y_true,
+            logits=y_pred_expanded,
+            label_length=label_length,
+            logit_length=input_length,
+            logits_time_major=False,
+            blank_index=0
+        )
     
     def train(self, x_train, y_train, 
               x_val: Optional[np.ndarray] = None,
