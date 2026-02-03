@@ -1,0 +1,25 @@
+# Requirements for Enhanced Handwritten Text Recognition
+
+# Core dependencies
+numpy>=1.23.0,<2.0
+tensorflow>=2.10.0,<2.16
+tensorflow-addons>=0.21.0
+
+# Image processing
+opencv-python>=4.0
+Pillow>=6.0
+
+# Utilities
+easydict>=1.9
+tqdm>=4.0
+matplotlib>=3.0
+symspellpy>=6.0.0
+
+# Optional: For advanced NLP correction (uncomment if needed)
+# torch>=1.7.0
+# transformers>=4.0.0
+
+# Development tools
+pytest>=7.0
+black>=22.0
+flake8>=4.0

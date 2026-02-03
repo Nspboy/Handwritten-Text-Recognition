@@ -1,0 +1,36 @@
+{
+  "dataset_path": "dataset/",
+  "model_save_dir": "checkpoints/",
+  "log_dir": "logs/",
+  "batch_size": 32,
+  "epochs": 100,
+  "learning_rate": 0.001,
+  "input_shape": [128, 128, 1],
+  "num_classes": 80,
+  "lstm_units": 128,
+  "num_lstm_layers": 2,
+  "dropout_rate": 0.3,
+  "validation_split": 0.1,
+  "early_stopping_patience": 10,
+  "preprocessing": {
+    "blur_kernel": [5, 5],
+    "morphology_enabled": true
+  },
+  "cnn": {
+    "dropout_rate": 0.3
+  },
+  "lstm": {
+    "units": 128,
+    "num_layers": 2,
+    "return_sequences": true
+  },
+  "enhancement": {
+    "num_heads": 4,
+    "dropout_rate": 0.1,
+    "num_blocks": 2
+  },
+  "nlp": {
+    "use_transformers": false,
+    "correction_method": "simple"
+  }
+}
