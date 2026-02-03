@@ -1,31 +1,31 @@
 [
   {
-    "id": 89,
-    "ground_truth": "User experience design",
-    "predicted": "Image Processing",
-    "normalized": "Image Processing"
+    "id": 12,
+    "ground_truth": "Digital transformation",
+    "predicted": "Neural Networks",
+    "normalized": "Neural Networks"
   },
   {
-    "id": 55,
-    "ground_truth": "Travel journey adventure",
+    "id": 32,
+    "ground_truth": "Blockchain technology",
+    "predicted": "Pattern Detection",
+    "normalized": "Pattern Detection"
+  },
+  {
+    "id": 69,
+    "ground_truth": "Cloud computing services",
     "predicted": "Computer Vision",
     "normalized": "Computer Vision"
   },
   {
-    "id": 85,
-    "ground_truth": "Network security protocol",
-    "predicted": "Machine Learning",
-    "normalized": "Machine Learning"
+    "id": 1,
+    "ground_truth": "Tourism hospitality service",
+    "predicted": "Text Recognition",
+    "normalized": "Text Recognition"
   },
   {
-    "id": 90,
-    "ground_truth": "Deep neural networks",
-    "predicted": "Machine Learning",
-    "normalized": "Machine Learning"
-  },
-  {
-    "id": 26,
-    "ground_truth": "Travel journey adventure",
+    "id": 6,
+    "ground_truth": "Cryptocurrency exchange",
     "predicted": "Neural Networks",
     "normalized": "Neural Networks"
   }
