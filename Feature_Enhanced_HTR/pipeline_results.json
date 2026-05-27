@@ -1,0 +1,260 @@
+{
+  "training": {
+    "history": {
+      "loss": [
+        16.63872528076172,
+        13.220375061035156,
+        12.461396217346191,
+        11.67644214630127,
+        10.929254531860352,
+        10.006901741027832,
+        9.1808443069458,
+        8.235696792602539,
+        7.409158706665039,
+        6.706452369689941,
+        5.985234260559082,
+        5.478879451751709,
+        4.876117706298828,
+        4.502800464630127,
+        4.042217254638672,
+        3.6992249488830566,
+        3.2678070068359375,
+        3.0601930618286133,
+        2.8361976146698,
+        2.6351044178009033,
+        2.373640775680542,
+        1.7869770526885986,
+        1.49382483959198,
+        1.3604644536972046,
+        1.314177393913269,
+        1.232328176498413
+      ],
+      "val_loss": [
+        36.254451751708984,
+        36.08543395996094,
+        17.038108825683594,
+        11.399393081665039,
+        10.905616760253906,
+        10.181496620178223,
+        9.628891944885254,
+        8.330395698547363,
+        8.381749153137207,
+        8.540458679199219,
+        7.894479751586914,
+        20.203079223632812,
+        7.094058990478516,
+        22.383827209472656,
+        7.454618453979492,
+        6.6028947830200195,
+        6.92050838470459,
+        7.666562557220459,
+        7.198059558868408,
+        7.72664737701416,
+        8.558595657348633,
+        7.481655120849609,
+        21.10494613647461,
+        7.626494884490967,
+        8.104140281677246,
+        7.516233921051025
+      ],
+      "lr": [
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0010000000474974513,
+        0.0005000000237487257,
+        0.0005000000237487257,
+        0.0005000000237487257,
+        0.0005000000237487257,
+        0.0005000000237487257
+      ]
+    },
+    "epochs": 50,
+    "samples": 4000
+  },
+  "inference": [
+    {
+      "ground_truth": "and",
+      "predicted": "bead",
+      "corrected": "Bead"
+    },
+    {
+      "ground_truth": "is",
+      "predicted": "s",
+      "corrected": "S"
+    },
+    {
+      "ground_truth": "conference",
+      "predicted": "aoifane",
+      "corrected": "Aoifane"
+    },
+    {
+      "ground_truth": "telling",
+      "predicted": "tkeling",
+      "corrected": "Tkeling"
+    },
+    {
+      "ground_truth": "has",
+      "predicted": "thas",
+      "corrected": "Thas"
+    },
+    {
+      "ground_truth": "odd",
+      "predicted": "oll",
+      "corrected": "Oll"
+    },
+    {
+      "ground_truth": "Williams",
+      "predicted": "liias",
+      "corrected": "Liias"
+    },
+    {
+      "ground_truth": "fit",
+      "predicted": "frl",
+      "corrected": "Frl"
+    },
+    {
+      "ground_truth": "we",
+      "predicted": "we",
+      "corrected": "We"
+    },
+    {
+      "ground_truth": "He",
+      "predicted": "bhe",
+      "corrected": "Bhe"
+    },
+    {
+      "ground_truth": "per",
+      "predicted": "pal",
+      "corrected": "Pal"
+    },
+    {
+      "ground_truth": ",",
+      "predicted": ",",
+      "corrected": ","
+    },
+    {
+      "ground_truth": "today",
+      "predicted": "today",
+      "corrected": "Today"
+    },
+    {
+      "ground_truth": "would",
+      "predicted": "wold",
+      "corrected": "Wold"
+    },
+    {
+      "ground_truth": "-",
+      "predicted": ".",
+      "corrected": "."
+    },
+    {
+      "ground_truth": "demonstrators",
+      "predicted": "rentatt",
+      "corrected": "Rentatt"
+    },
+    {
+      "ground_truth": "has",
+      "predicted": "has",
+      "corrected": "Has"
+    },
+    {
+      "ground_truth": "some",
+      "predicted": "e",
+      "corrected": "E"
+    },
+    {
+      "ground_truth": "Wilcox",
+      "predicted": "wilcon",
+      "corrected": "Wilcon"
+    },
+    {
+      "ground_truth": "to",
+      "predicted": "o",
+      "corrected": "O"
+    }
+  ],
+  "metrics": {
+    "before_nlp": {
+      "cer": 0.47674418604651164,
+      "wer": 0.8,
+      "accuracy": 0.2
+    },
+    "after_nlp": {
+      "cer": 0.5930232558139535,
+      "wer": 0.95,
+      "accuracy": 0.2
+    }
+  },
+  "comparison": {
+    "baseline_models": {
+      "CNN + BiLSTM": {
+        "cer": 0.32,
+        "accuracy": 0.68
+      },
+      "+ HRNN + Attention": {
+        "cer": 0.21,
+        "accuracy": 0.81
+      },
+      "+ NLP Correction": {
+        "cer": 0.17,
+        "accuracy": 0.87
+      }
+    },
+    "current_model": {
+      "before_nlp": {
+        "cer": 0.47674418604651164,
+        "wer": 0.8,
+        "accuracy": 0.2
+      },
+      "after_nlp": {
+        "cer": 0.5930232558139535,
+        "wer": 0.95,
+        "accuracy": 0.2
+      }
+    }
+  },
+  "custom_evaluation": [
+    {
+      "image": "image1.png",
+      "ground_truth": "mid-april",
+      "predicted": "iie",
+      "final": "Iie"
+    },
+    {
+      "image": "image2.png",
+      "ground_truth": "beautiful",
+      "predicted": "b",
+      "final": "B"
+    },
+    {
+      "image": "image3.png",
+      "ground_truth": "Walmart",
+      "predicted": "",
+      "final": ""
+    },
+    {
+      "image": "image4.png",
+      "ground_truth": "cursive",
+      "predicted": "fe",
+      "final": "Fe"
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature-Enhanced Handwritten Text Recognition</title>
+    <meta name="description" content="A state-of-the-art HTR system using CNN, BiLSTM, HRNN, and NLP Post-Processing.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="header">
+            <h1 class="title">Feature-Enhanced <span>HTR</span></h1>
+            <p class="subtitle">CNN • BiLSTM • HRNN • Attention • CTC • NLP Post-Processing</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Left Column: Input & Controls -->
+            <div class="left-column">
+                <section class="panel input-panel glass">
+                    <div class="panel-header">
+                        <i class="ph ph-image"></i>
+                        <h2>Input Source</h2>
+                    </div>
+                    
+                    <div class="tabs">
+                        <button class="tab-btn active" id="tabUploadBtn"><i class="ph ph-upload"></i> Upload</button>
+                        <button class="tab-btn" id="tabDrawBtn"><i class="ph ph-pencil-line"></i> Draw Canvas</button>
+                    </div>
+                    
+                    <div class="tab-content" id="uploadTabContent">
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                            <div class="upload-content">
+                                <i class="ph ph-upload-simple upload-icon"></i>
+                                <p>Drag & Drop an image here</p>
+                                <span>or click to browse</span>
+                            </div>
+                        </div>
+                        
+                        <div class="samples-section">
+                            <h3 class="section-title">Or Choose a Preset Sample</h3>
+                            <div class="samples-grid" id="samplesGrid">
+                                <div class="samples-loading">
+                                    <i class="ph ph-spinner spin"></i> Loading samples...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content hidden" id="drawTabContent">
+                        <div class="canvas-wrapper">
+                            <canvas id="drawingCanvas" width="500" height="150"></canvas>
+                            <div class="canvas-controls">
+                                <div class="brush-control">
+                                    <label for="brushSize"><i class="ph ph-paint-brush"></i> Size:</label>
+                                    <input type="range" id="brushSize" min="2" max="15" value="6">
+                                    <span id="brushSizeVal">6px</span>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" id="clearCanvasBtn">
+                                    <i class="ph ph-trash"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="canvas-actions">
+                            <button class="btn btn-primary w-full" id="analyzeCanvasBtn">
+                                <i class="ph ph-magic-wand"></i> Analyze Drawing
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="preview-area hidden" id="previewArea">
+                        <img id="imagePreview" src="" alt="Original Image Preview">
+                        <div class="preview-actions">
+                            <button class="btn btn-secondary" id="resetBtn">
+                                <i class="ph ph-arrows-counter-clockwise"></i> Reset
+                            </button>
+                            <button class="btn btn-primary" id="analyzeBtn">
+                                <i class="ph ph-magic-wand"></i> Analyze Text
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel settings-panel glass mt-1">
+                    <div class="panel-header">
+                        <i class="ph ph-sliders"></i>
+                        <h2>NLP Configuration</h2>
+                    </div>
+                    <div class="form-group">
+                        <label for="nlpMethodSelect" class="form-label">Post-Processing Engine</label>
+                        <select id="nlpMethodSelect" class="form-select">
+                            <option value="simple" selected>Simple Cleanup (Standard whitespace)</option>
+                            <option value="symspell">SymSpell Spellcheck (Dictionary correction)</option>
+                            <option value="transformer">Flan-T5 Transformer (AI sequence correction)</option>
+                        </select>
+                        <p class="help-text" id="nlpHelpText">Standardizes whitespaces and removes trailing syntax anomalies.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Processing & Output -->
+            <section class="panel output-panel glass">
+                <div class="panel-header">
+                    <i class="ph ph-cpu"></i>
+                    <h2>Recognition Pipeline</h2>
+                </div>
+
+                <div class="pipeline-container">
+                    
+                    <!-- Step 1: Preprocessing -->
+                    <div class="pipeline-step" id="step-prep">
+                        <div class="step-icon"><i class="ph ph-faders"></i></div>
+                        <div class="step-content">
+                            <h3>1. Image Preprocessing</h3>
+                            <p>Grayscale, Gaussian Noise Filtering & Otsu Binarization</p>
+                            <div class="step-result hidden" id="prepResult">
+                                <img id="processedPreview" src="" alt="Processed Image">
+                            </div>
+                        </div>
+                        <div class="step-status"><i class="ph ph-circle"></i></div>
+                    </div>
+
+                    <!-- Step 2: Feature Extraction -->
+                    <div class="pipeline-step" id="step-cnn">
+                        <div class="step-icon"><i class="ph ph-squares-four"></i></div>
+                        <div class="step-content">
+                            <h3>2. CNN + BiLSTM + HRNN</h3>
+                            <p>Spatial feature extraction & hierarchical sequence modeling</p>
+                            <div class="progress-bar hidden" id="modelProgress"><div class="progress-fill"></div></div>
+                        </div>
+                        <div class="step-status"><i class="ph ph-circle"></i></div>
+                    </div>
+
+                    <!-- Step 3: Decoding -->
+                    <div class="pipeline-step" id="step-ctc">
+                        <div class="step-icon"><i class="ph ph-text-aa"></i></div>
+                        <div class="step-content">
+                            <h3>3. CTC Decoding</h3>
+                            <p>Translating spatial-temporal features to text</p>
+                            <div class="step-result result-text hidden" id="rawTextResult">
+                                <span class="label">Raw Output:</span>
+                                <span class="value" id="rawTextValue">-</span>
+                            </div>
+                        </div>
+                        <div class="step-status"><i class="ph ph-circle"></i></div>
+                    </div>
+
+                    <!-- Step 4: NLP Correction -->
+                    <div class="pipeline-step" id="step-nlp">
+                        <div class="step-icon"><i class="ph ph-check-circle"></i></div>
+                        <div class="step-content">
+                            <h3>4. NLP Post-Processing</h3>
+                            <p>Contextual error correction</p>
+                            <div class="step-result final-result hidden" id="finalTextResult">
+                                <span class="label">Final Recognized Text:</span>
+                                <div class="final-text-container">
+                                    <span class="value highlight" id="finalTextValue">-</span>
+                                </div>
+                                <div class="metrics">
+                                    <span class="badge"><i class="ph ph-clock"></i> <span id="timeValue">-</span>s</span>
+                                    <span class="badge success"><i class="ph ph-trend-up"></i> Enhanced Accuracy</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-status"><i class="ph ph-circle"></i></div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

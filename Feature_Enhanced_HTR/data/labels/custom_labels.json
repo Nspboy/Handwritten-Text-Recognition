@@ -1,0 +1,22 @@
+[
+  {
+    "image": "image1.png",
+    "text": "mid-april",
+    "processed_path": "data\\processed\\custom\\image1.png"
+  },
+  {
+    "image": "image2.png",
+    "text": "beautiful",
+    "processed_path": "data\\processed\\custom\\image2.png"
+  },
+  {
+    "image": "image3.png",
+    "text": "Walmart",
+    "processed_path": "data\\processed\\custom\\image3.png"
+  },
+  {
+    "image": "image4.png",
+    "text": "cursive",
+    "processed_path": "data\\processed\\custom\\image4.png"
+  }
+]

@@ -1,0 +1,25 @@
+# Python related
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Datasets and Large Data
+data/benchmark/
+data/processed/
+data/custom/
+dataset/
+logs/
+checkpoints/
+
+# IDE related
+.vscode/
+.idea/
+
+# OS related
+.DS_Store
+Thumbs.db
