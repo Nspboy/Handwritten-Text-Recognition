@@ -14,6 +14,18 @@ from engine.preprocessing.preprocess import ImagePreprocessor
 from engine.model.decoder_ctc import CTCDecoder
 
 def load_char_mapping():
+    # First attempt to load from best_model_mapping.json or final_model_mapping.json
+    for name in ["best_model_mapping.json", "final_model_mapping.json"]:
+        mapping_path = Path("checkpoints") / name
+        if mapping_path.exists():
+            print(f"Loading character mapping from {mapping_path}...")
+            import json
+            with open(mapping_path, 'r') as f:
+                data = json.load(f)
+            char_to_idx = data['char_to_idx']
+            idx_to_char = {int(k): v for k, v in data['idx_to_char'].items()}
+            return char_to_idx, idx_to_char
+
     # Attempt to load mapping from labels
     import json
     labels_path = Path("data/labels/labels.json")
@@ -63,10 +75,11 @@ def verify():
     print(f"Predicting for {test_img_path}...")
     preds = model.predict(img)
     
-    # Simple greedy decoding
+    # Simple greedy decoding with blank_index=0
     decoded, _ = tf.nn.ctc_greedy_decoder(
         inputs=tf.transpose(preds, perm=[1, 0, 2]),
-        sequence_length=[preds.shape[1]]
+        sequence_length=[preds.shape[1]],
+        blank_index=0
     )
     decoded_dense = tf.sparse.to_dense(decoded[0], default_value=-1).numpy()
     

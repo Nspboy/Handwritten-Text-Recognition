@@ -248,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await sleep(400);
             completeStep('nlp');
             document.getElementById('finalTextValue').textContent = data.corrected_text || '[No text detected]';
+            document.getElementById('digitizedPreview').src = data.digitized_image || '';
             document.getElementById('timeValue').textContent = data.inference_time;
             document.getElementById('finalTextResult').classList.remove('hidden');
 

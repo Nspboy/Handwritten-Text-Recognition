@@ -87,9 +87,11 @@ class CTCDecoder:
             
             if greedy:
                 # Greedy decoding: select highest probability at each step
+                # By default blank_index=0 is used in the project
                 decoded, log_prob = tf.nn.ctc_greedy_decoder(
                     inputs=tf.transpose(y_pred, perm=[1, 0, 2]),  # time_major
-                    sequence_length=input_length
+                    sequence_length=input_length,
+                    blank_index=0
                 )
             else:
                 # Beam search decoding (more accurate but slower)
