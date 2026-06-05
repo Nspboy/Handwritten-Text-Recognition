@@ -1,0 +1,119 @@
+Page 10: CHAPTER header -> Chapter 1
+Page 10: CHAPTER header -> Chapter 2
+Page 10: CHAPTER header -> Chapter 7
+Page 11: CHAPTER header -> Chapter 1
+Page 11: CHAPTER header -> Chapter 2
+Page 11: CHAPTER header -> Chapter 7
+Page 12: CHAPTER header -> Chapter 1
+Page 12: CHAPTER header -> Chapter 2
+Page 12: Section -> 2.1.1 Literature Survey (Sub-sub-section)
+Page 12: CHAPTER header -> Chapter 3
+Page 12: CHAPTER header -> Chapter 4
+Page 12: CHAPTER header -> Chapter 5
+Page 13: CHAPTER header -> CHAPTER 1: INTRODUCTION
+Page 15: Section -> 1.2 Problem statement of the Thesis
+Page 15: Section -> 1.3 Objectives of the Thesis
+Page 16: Section -> 1.4 Scope
+Page 16: Section -> 1.6 Organization of the Thesis
+Page 17: CHAPTER header -> Chapter 2: Literature Survey
+Page 17: CHAPTER header -> Chapter 3: Methodology
+Page 17: CHAPTER header -> Chapter 4: Results and Discussion
+Page 17: CHAPTER header -> Chapter 5: Conclusions and Future Scope
+Page 18: CHAPTER header -> CHAPTER 2: LITERATURE SURWAY
+Page 18: CHAPTER header -> paradigms. This chapter provides a comprehensive review of the historical and modern
+Page 19: Section -> 2.2  Classical Approaches to HTR
+Page 21: Section -> 2.3  Convolutional and Recurrent Architectures
+Page 21: Section -> 2.4  Attention Mechanisms
+Page 22: Section -> 2.5 Hierarchical and Multi-Scale Feature Learning
+Page 22: Section -> 2.6 Transformers in HTR
+Page 22: Section -> 2.6.1 Vision Transformers (ViT) as Encoders
+Page 23: Section -> 2.6.2 Encoder-Decoder Transformers (TrOCR)
+Page 23: Section -> 2.6.3  Full-Page Document Recognition
+Page 24: Section -> 2.8  Transfer Learning and Advanced Data Augmentation
+Page 24: Section -> 2.8.1 Transfer Learning from Natural Images
+Page 24: Section -> 2.8.2  Geometric and Elastic Distortions
+Page 24: Section -> 2.8.3 Generative Adversarial Networks (GANs)
+Page 25: Section -> 2.9 Multilingual and Specialized HTR Applications
+Page 25: Section -> 2.9.1 Multilingual and Complex Scripts
+Page 25: Section -> 2.9.2 Mathematical and Historical Document Recognition
+Page 26: Section -> 2.10 Detailed Analysis of Key Academic Studies
+Page 27: Section -> 2.11  Summary
+Page 27: Section -> 2.12 CTC Decoding and Search Algorithms
+Page 28: Section -> 2.13 Research Gap
+Page 28: Section -> 2.14 Exhaustive Review of Historical Paradigms and Benchmark Studies
+Page 28: Section -> 2.14.1 The Hidden Markov Model (HMM) Era (1990s - 2000s)
+Page 28: Section -> 2.14.2 The CNN-RNN Hybrid Revolution (2015 - 2018)
+Page 29: Section -> 2.15 Exhaustive Breakdown of Attention Varieties
+Page 29: Section -> 2.15.1 Bahdanau (Additive) Attention
+Page 29: Section -> 2.15.2 Luong (Multiplicative) Attention
+Page 30: Section -> 2.15.3 Self-Attention and Vision Transformers (ViT)
+Page 30: Section -> 2.16 Exhaustive Dataset History and Corpus Analysis
+Page 30: Section -> 2.16.1 The IAM Handwriting Database and the LOB Corpus
+Page 31: Section -> 2.16.2 Comparative Dataset Analysis: RIMES, Bentham, and George Washington
+Page 32: CHAPTER header -> CHAPTER 3: Materials and Experimental Techniques/Methodology
+Page 32: Section -> 3.1 Introduction
+Page 32: CHAPTER header -> Classification (CTC) decoding, and Natural Language Processing (NLP) post-processing. This chapter
+Page 32: Section -> 3.2 Dataset Pparation
+Page 32: Section -> 3.2.1 IAM Handwriting Word Dataset
+Page 33: Section -> 3.2.2 Train-Test Split
+Page 33: Section -> 3.2.3 Data Augmentation Strategy
+Page 33: Section -> 3.3  Image Preprocessing
+Page 33: Section -> 3.3.1  Grayscale Conversion
+Page 34: Section -> 3.3.2 Gaussian Noise Filtering
+Page 34: Section -> 3.3.3 Otsu Binarization
+Page 34: Section -> 3.3.4 Resizing and Normalization
+Page 34: Section -> 3.4  CNN Feature Extraction
+Page 35: Section -> 3.4.1 Convolutional Layers and Receptive Fields
+Page 35: Section -> 3.4.2  Batch Normalization
+Page 36: Section -> 3.4.3  Max-Pooling and Dimensionality Reduction
+Page 36: Section -> 3.4.4  Feature Sequence Formation
+Page 36: Section -> 3.5 BiLSTM Sequence Modeling
+Page 36: Section -> 3.5.1 Bidirectional Processing
+Page 37: Section -> 3.5.2  Stacked Architecture
+Page 37: Section -> 3.6  HRNN and Attention Enhancement
+Page 37: Section -> 3.6.1  Hierarchical Recurrent Neural Network
+Page 37: Section -> 3.6.2  Soft Attention Mechanism
+Page 38: Section -> 3.7 CTC Decoding and Optimization
+Page 38: Section -> 3.7.1 CTC Formulation and the Forward-Backward Algorithm
+Page 39: Section -> 3.7.2 Training Loss and Backpropagation
+Page 39: Section -> 3.7.3 Greedy Decoding
+Page 40: Section -> 3.8 NLP Post-Processing
+Page 40: Section -> 3.8.2 Spell Correction
+Page 41: Section -> 3.8.3 Context Refinement using n-gram Language Models
+Page 42: Section -> 3.9  Implementation Details
+Page 42: Section -> 3.10 Summary
+Page 42: CHAPTER header -> transcriptions. The next chapter presents the experimental evaluation of this pipeline.
+Page 42: Section -> 3.11 Exhaustive Mathematical Formulation of the Optimization Landscape
+Page 42: Section -> 3.11.1 Backpropagation Through Time (BPTT) in BiLSTM
+Page 43: Section -> 3.11.2 Convolutional Tensor Mathematics and Receptive Fields
+Page 44: Section -> 3.12 Hardware Optimization and CUDA Acceleration
+Page 46: CHAPTER header -> CHAPTER 4: RESULTS AND DISCUSSION
+Page 46: CHAPTER header -> This chapter presents the experimental evaluation of the proposed feature-enhanced Handwritten Text
+Page 46: Section -> 4.3 Quantitative Results
+Page 48: Section -> 4.4  Component Analysis
+Page 49: Section -> 4.5  Comparison with Related Work
+Page 50: Section -> 4.6  Sample Predictions
+Page 50: Section -> 4.7 Ablation Study and Empirical Observations
+Page 51: Section -> 4.8 Inference Latency Benchmarks
+Page 52: Section -> 4.9 Edge Case Error Analysis
+Page 52: Section -> 4.9.1  Severe Ink Bleed and Degradation
+Page 52: Section -> 4.9.2  Cross-Outs and Corrections
+Page 52: Section -> 4.10 Discussion and Limitations
+Page 52: Section -> 4.10.1 Aspect Ratio Distortion
+Page 52: Section -> 4.11  Summary
+Page 52: CHAPTER header -> The next chapter summarizes the conclusions and presents directions for future work.
+Page 53: Section -> 4.12 Exhaustive Hyperparameter Grid Search Logs
+Page 55: Section -> 4.13  Extended Error Taxonomy and False-Positive Case Studies
+Page 55: Section -> 4.13.1 Type I: The Cursive Ligature Merger (False Negatives)
+Page 55: Section -> 4.13.2 Type II: The Archaic Ascender Splitting (False Positives)
+Page 56: Section -> 4.13.3 Type III: Ink Bleed and Document Degradation
+Page 56: Section -> 4.14 Confidence Calibration and Expected Calibration Error (ECE)
+Page 59: CHAPTER header -> CHAPTER 5: CONCLUDING REMARKS
+Page 59: Section -> 5.1  Conclusions
+Page 59: Section -> 5.2  Future Scope
+Page 59: Section -> 5.2.1 Transformer-Based Sequence Modeling
+Page 60: Section -> 5.2.2 Aspect-Ratio-Preserving Preprocessing
+Page 60: Section -> 5.2.3 Sequence-to-Sequence NLP Correction
+Page 60: Section -> 5.2.4 Expanding Training Data and Semi-Supervised Learning
+Page 60: Section -> 5.2.5 Federated Learning for Privacy-Preserving HTR
+Page 61: Section -> 5.2.6 Multilingual and Multi-Script Extensions
