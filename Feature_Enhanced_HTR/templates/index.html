@@ -99,11 +99,18 @@
                     </div>
                     <div class="form-group">
                         <label for="nlpMethodSelect" class="form-label">Post-Processing Engine</label>
-                        <select id="nlpMethodSelect" class="form-select">
-                            <option value="simple" selected>Simple Cleanup (Standard whitespace)</option>
-                            <option value="symspell">SymSpell Spellcheck (Dictionary correction)</option>
-                            <option value="transformer">Flan-T5 Transformer (AI sequence correction)</option>
-                        </select>
+                        <div class="custom-dropdown" id="nlpDropdown">
+                            <div class="dropdown-selected" id="nlpMethodDisplay">
+                                <span>Simple Cleanup (Standard whitespace)</span>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            <div class="dropdown-options" id="nlpMethodOptions">
+                                <div class="dropdown-option selected" data-value="simple">Simple Cleanup (Standard whitespace)</div>
+                                <div class="dropdown-option" data-value="symspell">SymSpell Spellcheck (Dictionary correction)</div>
+                                <div class="dropdown-option" data-value="transformer">Flan-T5 Transformer (AI sequence correction)</div>
+                            </div>
+                            <input type="hidden" id="nlpMethodSelect" value="simple">
+                        </div>
                         <p class="help-text" id="nlpHelpText">Standardizes whitespaces and removes trailing syntax anomalies.</p>
                     </div>
                 </section>
@@ -168,8 +175,11 @@
                                     <span class="value highlight" id="finalTextValue">-</span>
                                 </div>
                                 <span class="label">Digitized Image Output:</span>
-                                <div class="step-result" id="digitizedResult" style="background: #ffffff; padding: 10px; border-radius: 12px; margin: 0.5rem 0; border: 1px solid var(--panel-border); text-align: center;">
+                                <div class="step-result" id="digitizedResult" style="background: #ffffff; padding: 10px; border-radius: 12px; margin: 0.5rem 0; border: 1px solid var(--panel-border); text-align: center; position: relative;">
                                     <img id="digitizedPreview" src="" alt="Digitized Output Image" style="max-height: 120px; width: 100%; object-fit: contain;">
+                                    <a id="downloadDigitizedBtn" href="#" download="digitized_output.png" class="btn btn-secondary btn-sm" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 4px; padding: 5px 10px; text-decoration: none;">
+                                        <i class="ph ph-download-simple"></i> Download
+                                    </a>
                                 </div>
                                 <div class="metrics">
                                     <span class="badge"><i class="ph ph-clock"></i> <span id="timeValue">-</span>s</span>

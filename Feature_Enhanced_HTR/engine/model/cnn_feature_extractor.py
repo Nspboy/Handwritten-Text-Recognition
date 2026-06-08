@@ -122,8 +122,9 @@ class CNNFeatureExtractor:
         if self.model is None:
             self.build_cnn()
         
-        # Create dummy input to infer shape
-        dummy_input = tf.zeros((1, *self.input_shape))
+        # Replace None with an arbitrary width (e.g. 128) for shape inference
+        dummy_shape = [128 if x is None else x for x in self.input_shape]
+        dummy_input = tf.zeros((1, *dummy_shape))
         output = self.model(dummy_input)
         return output.shape[1:]
     

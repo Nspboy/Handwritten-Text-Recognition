@@ -157,16 +157,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 'image/png');
     });
 
-    // --- NLP Configuration Helper Text ---
-    nlpMethodSelect.addEventListener('change', (e) => {
-        const val = e.target.value;
-        if (val === 'simple') {
-            nlpHelpText.textContent = 'Standardizes whitespaces and removes trailing syntax anomalies.';
-        } else if (val === 'symspell') {
-            nlpHelpText.textContent = 'Applies dictionary lookup to correct typos at character level (+5-10% word accuracy).';
-        } else if (val === 'transformer') {
-            nlpHelpText.textContent = 'Runs google/flan-t5-small seq2seq correction for contextual and grammatical fixes.';
-        }
+    // --- NLP Configuration Helper Text & Custom Dropdown ---
+    const nlpDropdown = document.getElementById('nlpDropdown');
+    const nlpMethodDisplay = document.getElementById('nlpMethodDisplay');
+    const nlpMethodOptions = document.getElementById('nlpMethodOptions');
+    
+    // Toggle dropdown
+    nlpMethodDisplay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        nlpDropdown.classList.toggle('active');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', () => {
+        nlpDropdown.classList.remove('active');
+    });
+
+    // Handle option selection
+    nlpMethodOptions.querySelectorAll('.dropdown-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            // Update selected style
+            nlpMethodOptions.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            
+            // Update display text
+            nlpMethodDisplay.querySelector('span').textContent = option.textContent;
+            
+            // Update hidden input value
+            const val = option.dataset.value;
+            nlpMethodSelect.value = val;
+            
+            // Update help text
+            if (val === 'simple') {
+                nlpHelpText.textContent = 'Standardizes whitespaces and removes trailing syntax anomalies.';
+            } else if (val === 'symspell') {
+                nlpHelpText.textContent = 'Applies dictionary lookup to correct typos at character level (+5-10% word accuracy).';
+            } else if (val === 'transformer') {
+                nlpHelpText.textContent = 'Runs google/flan-t5-small seq2seq correction for contextual and grammatical fixes.';
+            }
+            
+            nlpDropdown.classList.remove('active');
+        });
     });
 
     // --- Upload Drag and Drop ---
@@ -249,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             completeStep('nlp');
             document.getElementById('finalTextValue').textContent = data.corrected_text || '[No text detected]';
             document.getElementById('digitizedPreview').src = data.digitized_image || '';
+            document.getElementById('downloadDigitizedBtn').href = data.digitized_image || '#';
             document.getElementById('timeValue').textContent = data.inference_time;
             document.getElementById('finalTextResult').classList.remove('hidden');
 

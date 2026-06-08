@@ -120,7 +120,7 @@ class HTRTrainer:
             # height becomes new width, width becomes new height
             
             x = tf.keras.layers.Reshape(
-                (width, height * channels), 
+                (-1, height * channels), 
                 name='reshape_for_sequence'
             )(x)
             

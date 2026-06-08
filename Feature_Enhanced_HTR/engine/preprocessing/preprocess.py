@@ -66,9 +66,9 @@ class ImagePreprocessor:
             # Apply Gaussian blur to reduce noise
             blur = cv2.GaussianBlur(gray, self.blur_kernel, 0)
             
-            # Apply Otsu's binary thresholding
-            _, binary = cv2.threshold(
-                blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+            # Apply Adaptive thresholding to handle varying background colors (like the gray strip)
+            binary = cv2.adaptiveThreshold(
+                blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 10
             )
             
             # Optional: morphological operations to improve connectivity
