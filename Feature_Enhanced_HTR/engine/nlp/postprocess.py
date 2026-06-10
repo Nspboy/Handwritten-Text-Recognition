@@ -36,7 +36,6 @@ class TextCorrector:
             
             # Using a lightweight model for faster inference
             self.corrector = pipeline(
-                "text2text-generation",
                 model="google/flan-t5-small",
                 device=-1  # -1 for CPU, 0+ for GPU
             )
