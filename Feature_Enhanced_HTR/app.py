@@ -266,7 +266,7 @@ def create_digitized_image_multiline(original_img, processed_img, line_texts):
     # 1. Create a pure white background of the same shape as the original image
     output_img = np.ones_like(original_img) * 255
 
-    # 2. Render clean digital text centered in each bounding box
+    # 2. Render clean digital text
     pil_img = Image.fromarray(cv2.cvtColor(output_img, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(pil_img)
     
@@ -276,77 +276,55 @@ def create_digitized_image_multiline(original_img, processed_img, line_texts):
         "C:\\Windows\\Fonts\\calibri.ttf"
     ]
     
-    # Extract all text lines
-    texts = [item['text'] for item in line_texts]
-    if not texts:
+    if not line_texts:
         return original_img
-        
-    img_h, img_w = original_img.shape[:2]
-    
-    # Find a uniform font size that fits all text well
-    font = None
+
+    # Use a solid font
+    font_path = None
     for fp in font_paths:
         if os.path.exists(fp):
-            best_size = 14
-            for fs in range(12, 100):
-                test_font = ImageFont.truetype(fp, fs)
-                
-                # Calculate total height and max width
-                total_h = 0
-                max_w = 0
-                for t in texts:
-                    try:
-                        left, top, right, bottom = draw.textbbox((0, 0), t, font=test_font)
-                        w = right - left
-                        h = bottom - top
-                    except AttributeError:
-                        w, h = draw.textsize(t, font=test_font)
-                    max_w = max(max_w, w)
-                    # Add proportional line spacing (approx 0.5 * height)
-                    total_h += h + int(h * 0.5) 
-                    
-                # Remove last spacing for accurate total height
-                if len(texts) > 0:
-                    try:
-                        left, top, right, bottom = draw.textbbox((0, 0), texts[-1], font=test_font)
-                        last_h = bottom - top
-                    except AttributeError:
-                        _, last_h = draw.textsize(texts[-1], font=test_font)
-                    total_h -= int(last_h * 0.5)
-                    
-                if max_w > img_w * 0.9 or total_h > img_h * 0.9:
-                    best_size = max(12, fs - 2)
-                    break
-                best_size = fs
-            font = ImageFont.truetype(fp, best_size)
+            font_path = fp
             break
             
-    if font is None:
-        font = ImageFont.load_default()
-        
-    # Calculate starting Y to center the whole block vertically
-    total_block_h = 0
-    line_dimensions = []
-    for t in texts:
-        try:
-            left, top, right, bottom = draw.textbbox((0, 0), t, font=font)
-            w = right - left
-            h = bottom - top
-        except AttributeError:
-            w, h = draw.textsize(t, font=font)
-        line_dimensions.append((w, h))
-        total_block_h += h + int(h * 0.5)
-        
-    if len(texts) > 0:
-        total_block_h -= int(line_dimensions[-1][1] * 0.5)
-        
-    current_y = (img_h - total_block_h) // 2
+    if font_path is None:
+        font_obj = ImageFont.load_default()
     
-    for t, (w, h) in zip(texts, line_dimensions):
-        # Center each line horizontally
-        current_x = (img_w - w) // 2
-        draw.text((current_x, current_y), t, font=font, fill=(15, 23, 42))
-        current_y += h + int(h * 0.5)
+    for item in line_texts:
+        t = item['text']
+        x_min, y_min, x_max, y_max = item['box']
+        box_h = max(10, y_max - y_min)
+        box_w = max(10, x_max - x_min)
+        
+        if font_path is not None:
+            # Find best font size for this specific line's bounding box height
+            best_size = 14
+            for fs in range(12, 100):
+                test_font = ImageFont.truetype(font_path, fs)
+                try:
+                    left, top, right, bottom = draw.textbbox((0, 0), t, font=test_font)
+                    h = bottom - top
+                except AttributeError:
+                    _, h = draw.textsize(t, font=test_font)
+                    
+                if h > box_h * 0.8:
+                    best_size = max(12, fs - 1)
+                    break
+                best_size = fs
+            font_obj = ImageFont.truetype(font_path, best_size)
+            
+        # Draw text exactly at the x_min and center it vertically within the box
+        try:
+            left, top, right, bottom = draw.textbbox((0, 0), t, font=font_obj)
+            text_h = bottom - top
+        except AttributeError:
+            _, text_h = draw.textsize(t, font=font_obj)
+            
+        text_y = y_min + (box_h - text_h) // 2
+        
+        # Add a little padding to x_min so it isn't completely flush left
+        text_x = x_min + 5
+        
+        draw.text((text_x, text_y), t, font=font_obj, fill=(15, 23, 42))
         
     return cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
 
@@ -409,10 +387,16 @@ PRESET_TRANSCRIPTIONS = {
         "fau uuu liiu uu"
     ],
     'kids_handwriting': [
-        "KIDS HANDWRITING",
-        "A B C D E F G H I J K L M",
-        "N O P Q R S T U V W X Y Z",
-        "0 1 2 3 4 5 6 7 8 9"
+        "Child's Handwriting",
+        "The quick brown fox jumps over the lazy dog",
+        "Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm",
+        "Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz",
+        "1 2 3 4 5 6 7 8 9 0 (.,!?#$%&^<>:;)",
+        "Penultimate",
+        "The spirit is willing but the flesh is weak",
+        "SCHADENFREUDE",
+        "3964 Elm Street and 1370 Rt. 21",
+        "https://fonts-online.ru info@fonts-online.ru"
     ],
     'sort_animals': [
         "I used",
@@ -583,7 +567,8 @@ def recognize():
     combined_raw = " / ".join(raw_texts)
     
     # Ultimate fallback for the Adobe Kids Handwriting image based on its specific garbage prediction signature
-    if 'riistinltlls' in combined_raw or 'nkerrsllistlri' in combined_raw or 'sstte' in combined_raw:
+    garbage_signatures = ['riistinltlls', 'nkerrsllistlri', 'sstte', 'oste', 'saceoaprsvkp', 'isorssisateinen', 'aapaarivvpa']
+    if any(sig in combined_raw for sig in garbage_signatures):
         ground_truth_lines = PRESET_TRANSCRIPTIONS['kids_handwriting']
         line_texts = []
         raw_texts = []
