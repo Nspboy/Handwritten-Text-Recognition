@@ -11,9 +11,9 @@
     --panel-border: rgba(255, 255, 255, 0.05); /* Razor-thin premium border */
     --text-primary: #f8fafc; /* Crisp clean off-white */
     --text-secondary: #64748b; /* Cool grey secondary */
-    --accent-primary: #14b8a6; /* Premium Arctic Teal */
-    --accent-secondary: #06b6d4; /* Cyber Cyan */
-    --accent-glow: rgba(20, 184, 166, 0.15);
+    --accent-primary: #8b5cf6; /* Premium Purple */
+    --accent-secondary: #ec4899; /* Vibrant Pink */
+    --accent-glow: rgba(139, 92, 246, 0.15);
     --success: #10b981; /* Emerald green */
     --surface-hover: rgba(255, 255, 255, 0.03);
     --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);

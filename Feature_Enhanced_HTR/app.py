@@ -512,8 +512,6 @@ def recognize():
             sample_key = 'image3'
         elif shape == (225, 225):
             sample_key = 'image4'
-        elif shape == (220, 316) or shape == (192, 320):
-            sample_key = 'sort_animals'
             
     # Fallback to filename matching
     if not sample_key:
