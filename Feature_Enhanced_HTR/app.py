@@ -1,4 +1,14 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['HF_HUB_DISABLE_SYMLINKS_WARNING'] = '1'
+os.environ['HF_HUB_DISABLE_EXPERIMENTAL_WARNING'] = '1'
+import warnings
+warnings.filterwarnings('ignore')
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 from pathlib import Path
 import json
 import cv2
@@ -593,4 +603,6 @@ def recognize():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    print(" * Serving Flask app 'app'")
+    print(" * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)")
+    app.run(debug=False, port=5000)
