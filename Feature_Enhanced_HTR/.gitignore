@@ -23,3 +23,6 @@ checkpoints/
 # OS related
 .DS_Store
 Thumbs.db
+
+*.parquet
+Feature_Enhanced_HTR/data/IAM dataset/
