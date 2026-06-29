@@ -597,13 +597,17 @@ def recognize():
             
             start_time = time.time()
             try:
-                kannada_text = pytesseract.image_to_string(img, lang='kan', config=tess_config).strip()
+                kannada_text = pytesseract.image_to_string(img, lang='kan+eng', config=tess_config).strip()
                 # Get confidence/accuracy
-                data = pytesseract.image_to_data(img, lang='kan', config=tess_config, output_type=pytesseract.Output.DICT)
+                data = pytesseract.image_to_data(img, lang='kan+eng', config=tess_config, output_type=pytesseract.Output.DICT)
                 confidences = [int(c) for c in data['conf'] if str(c) != '-1']
                 avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
                 
-                print(f"\n>>>> KANNADA OCR ACCURACY (CONFIDENCE): {avg_conf:.2f}% <<<<\n")
+                try:
+                    print(f"\n>>>> KANNADA OCR ACCURACY (CONFIDENCE): {avg_conf:.2f}% <<<<\n")
+                    print(f"DEBUG OCR OUTPUT:\n{kannada_text}")
+                except UnicodeEncodeError:
+                    pass
             except Exception as e:
                 kannada_text = ""
                 print(f"Kannada OCR Failed: {e}")
@@ -692,7 +696,10 @@ def recognize():
     print(f"INFERENCE TIME: {round(inference_time, 3)}s")
     print(f"PREDICTION OUTPUT:")
     print("-" * 50)
-    print(combined_corrected)
+    try:
+        print(combined_corrected)
+    except UnicodeEncodeError:
+        print(combined_corrected.encode('utf-8', 'replace').decode('cp1252', 'replace'))
     print("="*50 + "\n")
 
     return jsonify({

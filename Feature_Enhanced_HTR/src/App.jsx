@@ -71,7 +71,7 @@ function preprocess(canvas, language) {
 // ═══════════════════════════════════════════════════════
 //  LOCAL BACKEND — PYTHON FLASK API
 // ═══════════════════════════════════════════════════════
-async function recognize(origDataUrl, prepDataUrl, nlpMode, addLog) {
+async function recognize(origDataUrl, prepDataUrl, nlpMode, language, addLog) {
   addLog("stage", "Sending image to local Python backend...");
   addLog("api", `→ POST http://127.0.0.1:5000/api/recognize`);
 
@@ -84,6 +84,7 @@ async function recognize(origDataUrl, prepDataUrl, nlpMode, addLog) {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("nlp_method", nlpMode);
+    formData.append("language", language);
 
     const res = await fetch("http://127.0.0.1:5000/api/recognize", {
       method: "POST",
@@ -129,8 +130,9 @@ async function recognize(origDataUrl, prepDataUrl, nlpMode, addLog) {
 const PRESETS = [
   { label:"Child's Handwriting", url:"/samples/childs_handwriting.jpg" },
   { label:"Historical Letter",  url:"/samples/in_mid_april.png" },
-  { label:"Cursive Sample",  url:"/samples/image2.jpg" },
-  { label:"Alphabet",    url:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Handwriting_of_John_Adams.jpg/320px-Handwriting_of_John_Adams.jpg" },
+  { label:"Kannada Meme", url:"/samples/kannada_meme.jpg" },
+  { label:"Kannada Alphabet", url:"/samples/kannada_alphabet.jpg" },
+  { label:"Kannada Joke", url:"/samples/kannada_joke.jpg" },
 ];
 
 // ═══════════════════════════════════════════════════════
@@ -140,6 +142,14 @@ const NLP_MODES = [
   { id:"simple",  label:"Simple Cleanup",         desc:"Standardizes whitespace and removes trailing syntax anomalies." },
   { id:"spell",   label:"Spell Check",             desc:"Corrects spelling errors using contextual language model." },
   { id:"grammar", label:"Grammar Correction",      desc:"Full grammar fix using NLP post-processing." },
+];
+
+// ═══════════════════════════════════════════════════════
+//  LANGUAGE CONFIG
+// ═══════════════════════════════════════════════════════
+const LANGUAGES = [
+  { id: "english", label: "English" },
+  { id: "kannada", label: "Kannada (ಕನ್ನಡ)" }
 ];
 
 // ═══════════════════════════════════════════════════════
@@ -248,6 +258,7 @@ export default function App() {
   const [result,      setResult]      = useState(null);
   const [analyzing,   setAnalyzing]   = useState(false);
   const [stage,       setStage]       = useState(0);      // 0=idle 1..4=active stage
+  const [language,    setLanguage]    = useState("english");
   const [nlpMode,     setNlpMode]     = useState("simple");
   const [showDraw,    setShowDraw]    = useState(false);
   const [logs,        setLogs]        = useState([]);
@@ -311,7 +322,7 @@ export default function App() {
       setStage(1); await new Promise(r=>setTimeout(r,400));
       setStage(2); await new Promise(r=>setTimeout(r,300));
       setStage(3);
-      const res = await recognize(inputImg, prepImg || inputImg, nlpMode, addLog);
+      const res = await recognize(inputImg, prepImg || inputImg, nlpMode, language, addLog);
       setStage(4); await new Promise(r=>setTimeout(r,300));
       setResult(res);
     } catch(e) {
