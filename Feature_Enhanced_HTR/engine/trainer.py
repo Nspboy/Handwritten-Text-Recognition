@@ -278,6 +278,42 @@ class HTRTrainer:
             logger.error(f"Error during training: {str(e)}")
             raise
     
+    def freeze_cnn_layers(self) -> None:
+        """Freeze CNN layers for Phase 2 training (Fine-tune RNN only)."""
+        if self.model is None:
+            logger.error("Model not built. Cannot freeze layers.")
+            return
+            
+        logger.info("Freezing CNN layers...")
+        for layer in self.model.layers:
+            # We assume functional API or layers starting with certain names.
+            # Typical functional model has layers like 'conv2d', 'batch_normalization'
+            if 'conv2d' in layer.name or 'batch_normalization' in layer.name or 'max_pooling2d' in layer.name:
+                layer.trainable = False
+        
+        # Recompile model
+        self.model.compile(
+            optimizer=Adam(learning_rate=self.config['learning_rate']),
+            loss=self._ctc_loss
+        )
+        logger.info("CNN layers frozen and model recompiled.")
+        
+    def unfreeze_all_layers(self) -> None:
+        """Unfreeze all layers for Phase 3 joint training."""
+        if self.model is None:
+            return
+            
+        logger.info("Unfreezing all layers...")
+        for layer in self.model.layers:
+            layer.trainable = True
+            
+        # Recompile model
+        self.model.compile(
+            optimizer=Adam(learning_rate=self.config['learning_rate'] * 0.1), # lower LR for fine tuning
+            loss=self._ctc_loss
+        )
+        logger.info("All layers unfrozen and model recompiled.")
+    
     def save_model(self, path: Optional[str] = None) -> None:
         """Save trained model and mappings."""
         if self.model is None:

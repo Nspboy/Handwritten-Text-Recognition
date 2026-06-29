@@ -53,9 +53,16 @@ function resizeTo(src, w, h) {
   const ox=Math.round((w-nw)/2), oy=Math.round((h-nh)/2);
   ctx.drawImage(src,ox,oy,nw,nh); return c;
 }
-function preprocess(canvas) {
+function preprocess(canvas, language) {
   const gray   = toGrayscale(canvas);
   const blurred= gaussianBlur(gray, 0.8);
+  
+  if (language === 'kannada') {
+    // For Kannada, extreme binarization and 128x128 resize destroys the text
+    // Return a readable version instead for the preview
+    return { gray, blurred, binary: blurred, resized: canvas };
+  }
+  
   const binary = otsuBinarize(blurred);
   const resized= resizeTo(binary, 128, 128);
   return { gray, blurred, binary, resized };
@@ -255,15 +262,15 @@ export default function App() {
     setLogs(p => [...p, { type, msg, t: new Date().toLocaleTimeString() }]);
   }, []);
 
-  const loadImage = useCallback(async (dataUrl) => {
+  const loadImage = useCallback(async (dataUrl, lang = language) => {
     setInputImg(dataUrl);
     setResult(null); setError(null); setLogs([]); setStage(0);
     try {
       const canvas = await loadImageToCanvas(dataUrl);
-      const { binary, resized } = preprocess(canvas);
-      setPrepImg(resized.toDataURL("image/png"));
+      const { resized, blurred } = preprocess(canvas, lang);
+      setPrepImg((lang === 'kannada' ? blurred : resized).toDataURL("image/png"));
     } catch(e) { setError("Preprocessing failed: " + e.message); }
-  }, []);
+  }, [language]);
 
   const handleFile = async (file) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -538,6 +545,23 @@ ${"═".repeat(50)}`;
               <span style={{fontSize:16}}>⚙️</span>
               <span style={{fontSize:14,fontWeight:700,color:"#e6edf3"}}>Configuration</span>
             </div>
+
+            <div style={{fontSize:10,color:"#484f58",letterSpacing:".1em",marginBottom:8}}>
+              LANGUAGE
+            </div>
+            <select value={language} onChange={e => {
+              setLanguage(e.target.value);
+              if (inputImg) loadImage(inputImg, e.target.value);
+            }} style={{
+              width:"100%",padding:"10px 12px",borderRadius:8,
+              border:"1px solid #30363d",background:"#161b22",
+              color:"#e6edf3",fontSize:12,cursor:"pointer",marginBottom:10,
+              appearance:"none"
+            }}>
+              {LANGUAGES.map(l=>(
+                <option key={l.id} value={l.id}>{l.label}</option>
+              ))}
+            </select>
 
             <div style={{fontSize:10,color:"#484f58",letterSpacing:".1em",marginBottom:8}}>
               POST-PROCESSING ENGINE

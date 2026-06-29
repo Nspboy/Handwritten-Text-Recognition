@@ -221,6 +221,32 @@ def preprocess_image(img_path: str) -> Optional[np.ndarray]:
     preprocessor = ImagePreprocessor()
     return preprocessor.preprocess_image(img_path)
 
+def detect_language(image_array: np.ndarray) -> str:
+    """
+    Simple pixel density check - Kannada has more 
+    connected strokes than English letters.
+    Assumes image is scaled 0-1 or 0-255.
+    """
+    if image_array.max() > 1.0:
+        # Assuming 0-255 range where text is 0 and background is 255
+        density = np.mean(image_array < 128)
+    else:
+        # Assuming 0-1 range where text is 0 and background is 1
+        density = np.mean(image_array < 0.5)
+        
+    if density > 0.35:
+        return "kannada"
+    return "english"
+
+def get_charset_for_language(lang: str) -> str:
+    """Return the character set for the specified language."""
+    ENGLISH_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?()[]{}\"' "
+    KANNADA_CHARS = "".join([chr(c) for c in range(0x0C80, 0x0CFF)])
+    
+    if lang == "kannada":
+        return KANNADA_CHARS
+    return ENGLISH_CHARS
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

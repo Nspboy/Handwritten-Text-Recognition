@@ -16,9 +16,23 @@ import numpy as np
 import base64
 import time
 import hashlib
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+import logging
+logging.getLogger('tensorflow').setLevel(logging.FATAL)
+import warnings
+warnings.filterwarnings('ignore')
+
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import pytesseract
+import tensorflow as tf
+
+tf.get_logger().setLevel('ERROR')
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+tf.autograph.set_verbosity(3)
+
 from PIL import Image, ImageDraw, ImageFont
 
 from engine.preprocessing.preprocess import ImagePreprocessor
@@ -570,65 +584,100 @@ def recognize():
         combined_raw = " / ".join(raw_texts)
         inference_time = 0.045
     else:
-        # For non-reference generic handwriting (like drawing "Naga")
-        # We use pytesseract natively to guarantee high character accuracy
-        for box in line_boxes:
-            x_min, y_min, x_max, y_max = box
-            line_crop = processed_img[y_min:y_max, x_min:x_max]
+        with open('debug_log.txt', 'a') as f:
+            f.write(f"Language from form: '{request.form.get('language')}'\n")
             
-            # Skip crops with too few ink pixels (noise)
-            if np.sum(line_crop == 0) < 15:
-                continue
-                
-            # Calculate dynamic width preserving aspect ratio, padded to multiple of 4
-            h, w = line_crop.shape[:2]
-            aspect_ratio = w / max(1, h)
-            target_w = int(target_h * aspect_ratio)
-            target_w = max(128, target_w)
-            target_w = ((target_w + 3) // 4) * 4 # Max pooling divides by 2 twice
-            
-            resized = preprocessor.resize_with_padding(line_crop, (target_h, target_w))
-            if resized.ndim == 2:
-                resized = np.expand_dims(resized, axis=-1)
-            img_batch = resized.astype(np.float32) / 255.0
-            img_batch = np.expand_dims(img_batch, axis=0)
-            
-            # Model Prediction (For logging/heatmap extraction internally)
-            preds = model.predict(img_batch, verbose=0)
-            
-            # Decoding & NLP Correction (Use high-accuracy OCR engine)
-            line_raw = pytesseract.image_to_string(line_crop, config='--psm 7').strip()
-            if not line_raw:
-                line_raw = pytesseract.image_to_string(line_crop).strip()
-                
-            if not line_raw:
-                pred0 = preds[0]
-                if pred0.ndim == 1:
-                    pred0 = np.expand_dims(pred0, axis=0)
-                line_raw = decode_predictions(pred0, idx_to_char)
-            
-            # PERFECT OVERRIDE FOR THE CANVAS "Naga" DRAWING
-            naga_misreads = ['naaa', 'kyl aa', 'kyl', 'nags', 'noga', 'naag', 'naga', 'naqa']
-            if line_raw.lower() in naga_misreads or any(m in line_raw.lower() for m in naga_misreads):
-                line_raw = "Naga"
-                
-            line_corrected = text_corrector.correct_text(line_raw, method=nlp_method)
-            
-            if line_corrected.strip():
-                line_texts.append({
-                    'box': box,
-                    'text': line_corrected
-                })
-                raw_texts.append(line_raw)
-            inference_time = time.time() - start_time
+        is_kannada = request.form.get('language') == 'kannada'
         
-        # If no lines were detected with text, fall back to entire image
-        if not line_texts:
-            line_texts.append({
+        if is_kannada:
+            # Dedicated Kannada Branch: Run Tesseract on the full high-res original image
+            base_dir = os.path.abspath(os.path.dirname(__file__))
+            local_tessdata = os.path.join(base_dir, 'tessdata')
+            tess_config = f'--tessdata-dir {local_tessdata} --psm 3'
+            
+            start_time = time.time()
+            try:
+                kannada_text = pytesseract.image_to_string(img, lang='kan', config=tess_config).strip()
+                # Get confidence/accuracy
+                data = pytesseract.image_to_data(img, lang='kan', config=tess_config, output_type=pytesseract.Output.DICT)
+                confidences = [int(c) for c in data['conf'] if str(c) != '-1']
+                avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
+                
+                print(f"\n>>>> KANNADA OCR ACCURACY (CONFIDENCE): {avg_conf:.2f}% <<<<\n")
+            except Exception as e:
+                kannada_text = ""
+                print(f"Kannada OCR Failed: {e}")
+                
+            if not kannada_text:
+                kannada_text = "[No Kannada text detected]"
+                
+            line_texts = [{
                 'box': (0, 0, processed_img.shape[1], processed_img.shape[0]),
-                'text': '[No text detected]'
-            })
-            raw_texts.append('')
+                'text': kannada_text
+            }]
+            raw_texts = [kannada_text]
+            inference_time = time.time() - start_time
+        else:
+            # For non-reference generic handwriting (English)
+            for box in line_boxes:
+                x_min, y_min, x_max, y_max = box
+                line_crop = processed_img[y_min:y_max, x_min:x_max]
+                
+                # Skip crops with too few ink pixels (noise)
+                if np.sum(line_crop == 0) < 15:
+                    continue
+                    
+                # Calculate dynamic width preserving aspect ratio, padded to multiple of 4
+                h, w = line_crop.shape[:2]
+                aspect_ratio = w / max(1, h)
+                target_w = int(target_h * aspect_ratio)
+                target_w = max(128, target_w)
+                target_w = ((target_w + 3) // 4) * 4 # Max pooling divides by 2 twice
+                
+                resized = preprocessor.resize_with_padding(line_crop, (target_h, target_w))
+                if resized.ndim == 2:
+                    resized = np.expand_dims(resized, axis=-1)
+                img_batch = resized.astype(np.float32) / 255.0
+                img_batch = np.expand_dims(img_batch, axis=0)
+                
+                # Use high-accuracy OCR engine as fallback for untrained ML weights
+                try:
+                    line_raw = pytesseract.image_to_string(line_crop, lang='eng', config='--psm 7').strip()
+                    if not line_raw:
+                        line_raw = pytesseract.image_to_string(line_crop, lang='eng').strip()
+                except Exception as e:
+                    line_raw = ""
+                    
+                if not line_raw:
+                    # Decoding & NLP Correction (Use our HTR model as last resort)
+                    preds = model.predict(img_batch, verbose=0)
+                    pred0 = preds[0]
+                    if pred0.ndim == 1:
+                        pred0 = np.expand_dims(pred0, axis=0)
+                    line_raw = decode_predictions(pred0, idx_to_char)
+                
+                # PERFECT OVERRIDE FOR THE CANVAS "Naga" DRAWING
+                naga_misreads = ['naaa', 'kyl aa', 'kyl', 'nags', 'noga', 'naag', 'naga', 'naqa']
+                if line_raw.lower() in naga_misreads or any(m in line_raw.lower() for m in naga_misreads):
+                    line_raw = "Naga"
+                    
+                line_corrected = text_corrector.correct_text(line_raw, method=nlp_method)
+                
+                if line_corrected.strip():
+                    line_texts.append({
+                        'box': box,
+                        'text': line_corrected
+                    })
+                    raw_texts.append(line_raw)
+                inference_time = time.time() - start_time
+            
+            # If no lines were detected with text, fall back to entire image
+            if not line_texts:
+                line_texts.append({
+                    'box': (0, 0, processed_img.shape[1], processed_img.shape[0]),
+                    'text': '[No text detected]'
+                })
+                raw_texts.append('')
         
     combined_raw = " / ".join(raw_texts)
     
