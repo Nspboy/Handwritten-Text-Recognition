@@ -51,6 +51,7 @@ class CNNFeatureExtractor:
             model = Sequential([
                 # Block 1
                 Conv2D(64, (3, 3), activation='relu', 
+                       # pyrefly: ignore [unexpected-keyword]
                        padding='same', input_shape=self.input_shape),
                 BatchNormalization(),
                 MaxPooling2D((2, 2)),

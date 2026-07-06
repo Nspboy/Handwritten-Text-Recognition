@@ -8,7 +8,9 @@ This module handles image preprocessing operations including:
 - Optional morphological operations
 """
 
+# pyrefly: ignore [missing-import]
 import cv2
+# pyrefly: ignore [missing-import]
 import numpy as np
 import random
 from pathlib import Path
