@@ -130,17 +130,17 @@ async function recognize(origDataUrl, prepDataUrl, nlpMode, language, addLog) {
 const PRESETS = [
   { label:"Child's Handwriting", url:"/samples/childs_handwriting.jpg" },
   { label:"Historical Letter",  url:"/samples/in_mid_april.png" },
-  { label:"Kannada Meme", url:"/samples/kannada_meme.jpg" },
+  { label:"Walmart Essay", url:"/samples/image3.png" },
+  { label:"Cursive Minimin", url:"/samples/image4.png" },
   { label:"Kannada Alphabet", url:"/samples/kannada_alphabet.jpg" },
   { label:"Kannada Joke", url:"/samples/kannada_joke.jpg" },
+  { label:"Nature Story", url:"/samples/image2.jpg" },
 ];
 
 // ═══════════════════════════════════════════════════════
 //  NLP MODES
 // ═══════════════════════════════════════════════════════
 const NLP_MODES = [
-  { id:"simple",  label:"Simple Cleanup",         desc:"Standardizes whitespace and removes trailing syntax anomalies." },
-  { id:"spell",   label:"Spell Check",             desc:"Corrects spelling errors using contextual language model." },
   { id:"grammar", label:"Grammar Correction",      desc:"Full grammar fix using NLP post-processing." },
 ];
 
@@ -259,7 +259,7 @@ export default function App() {
   const [analyzing,   setAnalyzing]   = useState(false);
   const [stage,       setStage]       = useState(0);      // 0=idle 1..4=active stage
   const [language,    setLanguage]    = useState("english");
-  const [nlpMode,     setNlpMode]     = useState("simple");
+  const [nlpMode,     setNlpMode]     = useState("grammar");
   const [showDraw,    setShowDraw]    = useState(false);
   const [logs,        setLogs]        = useState([]);
   const [showLogs,    setShowLogs]    = useState(false);

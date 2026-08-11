@@ -50,7 +50,7 @@ class CNNFeatureExtractor:
         try:
             model = Sequential([
                 # Block 1
-                Conv2D(64, (3, 3), activation='relu', 
+                Conv2D(32, (3, 3), activation='relu', 
                        # pyrefly: ignore [unexpected-keyword]
                        padding='same', input_shape=self.input_shape),
                 BatchNormalization(),
@@ -58,19 +58,13 @@ class CNNFeatureExtractor:
                 Dropout(self.dropout_rate),
                 
                 # Block 2
-                Conv2D(128, (3, 3), activation='relu', padding='same'),
+                Conv2D(64, (3, 3), activation='relu', padding='same'),
                 BatchNormalization(),
                 MaxPooling2D((2, 2)),
                 Dropout(self.dropout_rate),
                 
                 # Block 3
-                Conv2D(256, (3, 3), activation='relu', padding='same'),
-                BatchNormalization(),
-                MaxPooling2D((2, 1)),
-                Dropout(self.dropout_rate),
-                
-                # Block 4
-                Conv2D(512, (3, 3), activation='relu', padding='same'),
+                Conv2D(128, (3, 3), activation='relu', padding='same'),
                 BatchNormalization(),
                 MaxPooling2D((2, 1)),
                 Dropout(self.dropout_rate),
@@ -95,25 +89,19 @@ class CNNFeatureExtractor:
             inputs = Input(shape=self.input_shape)
             
             # Block 1
-            x = Conv2D(64, (3, 3), activation='relu', padding='same')(inputs)
+            x = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
             x = BatchNormalization()(x)
             x = MaxPooling2D((2, 2))(x)
             x = Dropout(self.dropout_rate)(x)
             
             # Block 2
-            x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
+            x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
             x = BatchNormalization()(x)
             x = MaxPooling2D((2, 2))(x)
             x = Dropout(self.dropout_rate)(x)
             
             # Block 3
-            x = Conv2D(256, (3, 3), activation='relu', padding='same')(x)
-            x = BatchNormalization()(x)
-            x = MaxPooling2D((2, 1))(x)
-            x = Dropout(self.dropout_rate)(x)
-            
-            # Block 4
-            x = Conv2D(512, (3, 3), activation='relu', padding='same')(x)
+            x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
             x = BatchNormalization()(x)
             x = MaxPooling2D((2, 1))(x)
             x = Dropout(self.dropout_rate)(x)
