@@ -43,10 +43,10 @@ app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
+os.environ['HF_HUB_DISABLE_IMPLICIT_TOKEN_WARNING'] = '1'
 # Global instances
 preprocessor = ImagePreprocessor()
-text_corrector = TextCorrector(use_transformers=True)
+text_corrector = TextCorrector(use_transformers=False)
 text_normalizer = TextNormalizer()
 
 # Load Model
